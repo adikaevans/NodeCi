@@ -121,8 +121,9 @@ NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's 
 * We added our repository from github to travis-ci using the plus(+) sign.
 * We are now going to take our local project, commit all the changes we've made and push all that code to github.
 
-=> To add all changes we made, we run; 'git add .' //without the quotes of course.
-* We then commit using; 'git commit -m "Travis config" '//without the single quotes.
+=> To add all changes we made, we run; 'git add .'      //without the quotes of course.
+* We then commit using; 'git commit -m "Travis config" '   //without the single quotes.
+* We use; 'git status' to see if there are any changes to commit.
 
 
 
