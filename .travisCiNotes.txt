@@ -125,7 +125,11 @@ NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's 
 * We then commit using; 'git commit -m "Travis config" '   //without the single quotes.
 * We use; 'git status' to see if there are any changes to commit.
 
+=> We now want to take all these changes that we made and push them up to our remote origin(repository) on github.com.
+* Travis-ci should automatically see the push up of new code and then try to clone and build our project.
+* To push-up our code, we run; ' git push origin master '.
 
+=> If we go back to our browser on travis-ci.org, we see some changes happening.
 
 
     
