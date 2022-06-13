@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - "18"        # Node version
+dist: trusty    # Distribution(Operating system) for the vitual machine. 'trusty' is a version of linux.
+services:       # An Array of services
+  - mongodb       
+  - redis-server
+env:            # Enviroment variables e.g development, production  see also /config/keys.js file
+  - NODE_ENV=ci # Continuous Integration(ci) enviroment
+  - PORT=3000    # Port for running our CI server instead of the default port 5000.
+cache:  # We instruct Travis to cache node_modules after it installs it at least one time for future builds.
+  directories: #This means if no changes to dependencies, then 'npm install' will run faster by using cache.
+    - node_modules
+    - client/node_modules #The nested react(client) project also has its 'node_modules' folder to be cached.
+install:  # some commands for initial setup of our project once loaded on Travis server.
+  - npm install
+  - npm run build # This command is specific to our current project.
+script: # We execute some tests once the server is started.
+  - nohup npm run start &  # See '.travisCiNotes.txt' file for details.
+  - sleep 3 # Allows a three seconds delay for server to be ready.
+  - npm run test # Starts our test suit.
+  

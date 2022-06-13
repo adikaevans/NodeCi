@@ -1,0 +1,144 @@
+
+=> We use 'jest' testing framework module to run our testings. Jest ONLY runs on files with a dot test(e.g header.test.js) file extension.
+
+=> Since we will be reusing the authentication logic in every test that we run from 'header.test.js', we dedicated some files(e.g userFactory,sessionFactory) for the authentication logic to save us from typing the same code through-out out test suite. 
+We moved all our authentication ogic to a 'Factory Function'.
+* Factory Function: Is generally used to generate some common resource(data) that we may want to use throughout our testing suit. We can re-use the Factory functions through-out our testing suit to assemble some data and return it immediately e.g the authentication data.
+This saves us from recreating the same data for every test that we create.
+
+* We created two Factory functions:
+    sessionFactory -> will create a session string(session) and a signature(sig) and return it.
+    userFactory -> will create a new user,save it to MongoDB and return it. We will then be able to use it  with sessionFactory to automatically login as a new user in our test suit.
+
+=> * Running 'userFactory' file as it is would run into an error like 'mongoose does NOT know what the User model is' even though we see from '/models/User.js' that the model-User is defined.
+* Whenever we run jest, it starts a new node enviroment executed from our command line. Jest then looks for ONLY files that end in '.test.js' and execute them.
+There4, anything related to mongoose(server code) will result in error unless we explicitly require it somewhere inside our test file.
+E.g For the initial config of mongoose to connect to our MongoDB instance we specified that in our 'index.js' file(around line 14). But when we run our test suit, the index.js file is NOT executed by jest and thus if we required the mongoose in our test suit there will be no connection to MongoDB hence an Error.
+* Like index.js, same will apply to our User.js model file. We will get an error if for example we try to get access to the User model(User.js) inside our userFactory coz 'User.js' file was never executed by jest.* So, anytime we wnat to use some code that we kind of assume has been executed by our Server project, we have to 'require' that into our test suit at some location.
+=> REMEMBER; when 'jest' runs our code base, it only executes test files(with a dot test extension) and None other(including our server files). We could import(require) the server files inside our test file But then the question comes on where we gonna require e.g the User.js file in and where are we gonna write the logic to tell mongoose to connect to our mongoDB database??
+* To have one central location to do all these common kind of like setup stuff, we will make a 'global setup file'. This setup file will be executed once by 'jest' whenever it starts-up. This setup will apply to every test inside our test suit.
+=> So we created a 'setup.js' file inside our test directory. Inside this file we did some common setups that we need for every test inside of our test suit. Right now we need two things;
+  1. we required-in the User model(User.js) to inform mongoose that User collection exists.
+  2. we required mongoose and ensure it connects to the MongoDB(just like we did in index.js). Our MongoDB URI(url) is specified inside '/config/dev.js' file. We however opted to require-in 'key.js' file coz it has the option of selecting either of the other key files(dev.js,prod.js) based on the current enviroment(development,production).
+
+=> Jest does NOT automatically look for this 'setup.js' file. The name is just our custom choice.
+* We have to directly instruct 'jest' to load this setup file at startup. To do that, add an option Object to our 'package.json' file. i.e "jest": {"setupFilesAfterEnv": ["./tests/setup.js"]
+  
+  NOTE:'setupFilesAfterEnv' replaced deprecated 'setupTestFrameworkScriptFile'.
+
+=> We now 'require'(import) both userFactory.js and sessionFactory.js files inside our header.test.js file. We specifically passed these files in our authentication test inside 'header.test.js' test file.
+
+=> We now Need to take all the Authentication Logic and put into a location where it can be re-used throughout our test suit.
+* We browsed to 'codepen.io' code editor to write-out some test code to explore some ideas for above logic.
+
+Example 1:
+=> We use a tool(proxy) in JavaScript to somehow teach 'customPage'(as seen below) to decide whether to call a function on itself or the underlying 'page' Object which we decided to make a constructor.
+* Proxy allows us to gain access to a target object or multiple objects
+* In the following example, class 'Greetings' is a sample base class that is presumably provided by some third-party library(like the real 'page'(underlying class)) and we CAN'T make any changes to it. We then added a second custom class(MoreGreetings) to implement more language options(functions) and we can modify.
+We need to have like a single object that can give us access to any greetings(functions) from either classes(Greetings, MoreGreetings) without having to write some big code for every class. 
+
+  console.clear();
+
+  class Greetings {
+    english() { return 'Hello'; }
+    spanish() { return 'Hola';}
+  }
+  
+  class MoreGreetings {
+    german() { return 'Hallo'; }
+    french() { return 'Bonjour'; }
+  }
+
+  const greetings = new Greetings();    //We don't wat to mess/change this class.
+  const moreGreetings = new MoreGreetings();
+
+  console.log(greetings.english());     // returns 'Hello'
+
+* We now have these two seperate Objects(greetings,moreGreetings) and we want to have combined access to both of them. We use 'proxy'. Proxy mediates between multiple Objects.
+
+/* new Proxy(); This is a constructor function included with ES2015. It is a global function so we don't need to require-in or install its module.
+* It takes two arguments:
+    1. target => the Object that we need to broker access to.*/
+    2. handler => Is an object with a set of functions that are executed when we try to access the target.
+
+ const allGreetings = new Proxy(moreGreetings, {
+  get: function(target, property) {    //'target' refers to moreGreetings.
+    console.log(property); //will return "french" which is the string name of the property we are accessing.
+
+/* We are NOT limited to only reference Properties that exist on the underlying target, we can reference any properties that we want e.g 'allGreetings.evenUnexistingProperty' will return "evenUnexistingProperty".* We use the 'get' Operation to access a property on the Proxy.*/    
+
+    return target[property] || greetings[property]
+    
+  }
+});
+allGreetings.french                  // see above console
+console.log(allGreetings.german);    // returns ' german() {return 'Hallo';} '
+console.log(allGreetings.german());   // will return "Hallo" as originally expected.
+console.log(allGreetings.english());  // returns "Hello".
+
+* Notice our Proxy had only one Object(moreGreetings) passed to it. Remember Proxy can manage multiple Objects, so we modified 'return target[property] || greetings[property]' to include 'greetings' Object as a second case. Thus calling 'allGreetings.english()' will return "Hello" despite the Proxy's target Object is only 'moreGreetings' and NOT 'greetings' as well.
+
+* We now want to apply this Proxy knowledge to our Page and CustomPage in Example 2 below.
+  
+Example 2: // See Example 1 for details.
+
+        console.clear();                          // Clears-out the console
+
+        class Page {                              // Base class of page as defined in puppeteer library.
+          goTo() { console.log('Am going to another page'); }
+          setCookie() { console.log('Am setting a cookie'); }
+        }
+
+        class CustomPage {
+
+          static build() { //static function-can be called without instance of underlying class(CustomPage).
+            const page = new Page();
+            const customPage = new CustomPage(page);
+
+/* customPage.login(); 
+customPage.page.goTo();  // This is too tideous having to reference 'page' every time.
+customPage.page.setCookie();  // We need customPage to fetch setCookie on its own(e.g customPage.setCookie) */
+
+            const superPage = new Proxy(customPage, {
+              get: function(target, property) {
+                return target[property] || page[property]
+            }
+          } );
+          return superPage;
+          }
+
+          constructor(page) {
+            this.page = page;
+          }
+
+          login() {
+            this.page.goTo('localhost:3000');
+            this.page.setCookie();
+          }
+        }
+        const superPage = CustomPage.build(); // We are now working directly with the CustomPage class.
+        superPage.goTo();                     // returns 'Am going to another page'
+        superPage.setCookie();                // returns 'Am setting a cookie'
+        superPage.login();                    // returns both of the above
+
+* We combined our Page and CustomPage using Proxy(superPage).
+* NOTE: 'CustomPage' is the main reason we are even doing all this 'Proxy' stuff at all. We there4 created a static function(build) inside our CustomPage class then used it to define and combine Page and CustomPage using a Proxy and returned it(superPage).
+* Now we only need to call CustomPage.build without worrying of modifying the underlying 'Page' class.
+
+=> Now we get back to our testing setup and try to create this new CustomPage class that will broker our access to all our puppeteer logic. It will combine all our puppeteer stuff into one single class and become an interface for accessing all the browser automation aspects of our test suit.
+
+* We made a folder(helpers) inside our tests directory. Then inside helpers we created 'page.js'(i.e our CustomPage) file. 
+* Inside 'page.js' we created a static function(build) which will generate a new puppeteer 'page', create an instance of CustomPage and then combine the two together using a Proxy object and return that.
+
+* We moved quite some lines of code partaining to the Authentication logic from 'header.test.js' to our CustomPage(page.js). We commented-out the moved lines of code in 'header.test.js' file.
+NOTE: This has been the main purpose for our CustomPage, to find a better location to put the very repetitive logic(i.e Authentication).
+
+
+
+
+
+
+
+
+
+
