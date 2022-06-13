@@ -117,21 +117,11 @@ NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's 
 
 => We now need to setup travis and make sure it understands that it needs to watch one of our repositories and try to clone and build a project any time we push new code to it.
 
-* We browsed to 'travis-ci.com'. Sign in with our github account.
-* We added our repository from github to travis-ci using the plus(+) sign.
-* We are now going to take our local project, commit all the changes we've made and push all that code to github.
+* We browsed to 'travis-ci.com'. Sign in with our github account and authorise the access.
+* We click the plus(+) sign on the left to add a repository from our git repository.
 
-=> To add all changes we made, we run; 'git add .'      //without the quotes of course.
-* We then commit using; 'git commit -m "Travis config" '   //without the single quotes.
-* We use; 'git status' to see if there are any changes to commit.
 
-=> We now want to take all these changes that we made and push them up to our remote origin(repository) on github.com.
-* Travis-ci should automatically see the push up of new code and then try to clone and build our project.
-* To push-up our code, we run; ' git push origin master '.
 
-=> If we go back to our browser on travis-ci.org, we see some changes happening.
-NB: We particularly run into output problems coz travis-ci.com is no longer free. We have an option of migrating to 'circleCi' and setup all these all over.
-* Any time we commit our code and push them to github, travis(circleCi) will start a new build and if successful, we will get an email as setup in github.
 
     
 	
@@ -145,4 +135,8 @@ NB: We particularly run into output problems coz travis-ci.com is no longer free
 	
 	
 	
-	    
+		
+		4,
+		5
+	]
+}     
