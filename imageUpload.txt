@@ -1,0 +1,11 @@
+=> Image Upload Issues:
+        - Where do images get physically stored? E.g mongoDB, HDD attached to server, External data store.
+        - How do images get to the place they should be stored?
+        - How do we relate images to a particular blog post?
+
+* In this project, we will store our images in an external data storage e.g Amazon S3, Azure File Storage, Goole cloud storage. Here, we use Amazon S3.
+
+=> We want to first setup some rules to govern users' ability to upload images;
+        - Only signed-in users should be able upload.
+        - The uploaded image should be tied to the blog post being created.
+        - Only images of type (.jpg, .png, etc) can be uploaded.
