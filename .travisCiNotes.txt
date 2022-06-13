@@ -128,11 +128,14 @@ NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's 
 => We now want to take all these changes that we made and push them up to our remote origin(repository) on github.com.
 * Travis-ci should automatically see the push up of new code and then try to clone and build our project.
 * To push-up our code, we run; ' git push origin master '.
+* To pull from remote; ' git pull origin master'
 
 => If we go back to our browser on travis-ci.org, we see some changes happening.
 
 NB: We particularly run into output problems coz travis-ci.com is no longer free. We have an option of migrating to 'circleCi' and setup all these all over.
 * Any time we commit our code and push them to github, travis(circleCi) will start a new build and if successful, we will get an email as setup in github.
+
+=> Next, we look at image Up-Load. We want to add images to our project e.g associating a blog with an image. See 'imageUpload.txt'
 
 
 
