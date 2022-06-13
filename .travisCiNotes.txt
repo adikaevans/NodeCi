@@ -130,12 +130,11 @@ NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's 
 * To push-up our code, we run; ' git push origin master '.
 
 => If we go back to our browser on travis-ci.org, we see some changes happening.
-<<<<<<< HEAD
+
 NB: We particularly run into output problems coz travis-ci.com is no longer free. We have an option of migrating to 'circleCi' and setup all these all over.
 * Any time we commit our code and push them to github, travis(circleCi) will start a new build and if successful, we will get an email as setup in github.
-=======
 
->>>>>>> e24a3d73359565e19df24b8eab4635a3c465f6f8
+
 
     
 	
