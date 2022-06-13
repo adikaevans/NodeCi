@@ -11,3 +11,20 @@
     - Only allow image files(e.g .jpg, .png, etc) to be uploaded.
 
 * The upload process is like a two-hop approach. From the browser, we upload the image to our Express API(file is streamed into a temporary storage) then Express API uploads the image to Amazon S3(external storage).
+-> This approach is however not scalable coz it will cause our server(Express API) to do more work thus increasing our expenditure on more servers. 
+
+-> As an alternative to above problem, we use a below flow that will allow us to upload images directly from our browser to Amazon S3;
+
+CLIENT                                   SERVER(EXPRESS API)                     AWS(AMAZON) S3
+
+Client tells Server it needs to upload---> Server asks S3 for a presigned-------->      
+a file to S3. It includes file name and     URL
+file type.
+
+                                     <----Server sends URL to react client  <------ S3 gives Server  
+                                                                                     a presigned URL(Works ONLY fo a file matching the original file name).
+React client uploads image file directly to S3 Server------------------------------>
+
+React client tells Server the upload------>
+was successful. Server saves URL of
+that new image with the blog post.
