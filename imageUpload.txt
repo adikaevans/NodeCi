@@ -6,6 +6,8 @@
 * In this project, we will store our images in an external data storage e.g Amazon S3, Azure File Storage, Goole cloud storage. Here, we use Amazon S3.
 
 => We want to first setup some rules to govern users' ability to upload images;
-        - Only signed-in users should be able upload.
-        - The uploaded image should be tied to the blog post being created.
-        - Only images of type (.jpg, .png, etc) can be uploaded.
+    - Only signed-in users should be able to upload. Restrict at API level not at react level for security
+    - The uploaded image should be tied to the blog post being created.
+    - Only allow image files(e.g .jpg, .png, etc) to be uploaded.
+
+* The upload process is like a two-hop approach. From the browser, we upload the image to our Express API(file is streamed into a temporary storage) then Express API uploads the image to Amazon S3(external storage).
