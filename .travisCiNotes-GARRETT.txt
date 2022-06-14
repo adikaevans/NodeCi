@@ -1,0 +1,154 @@
+=> CONTINUOUS INTEGRATION (CI)
+* This is the process of taking our code base and merging(combine) them back into the remote(main) repository(e.g github).
+* CI is mostly used in larger projects especially involving multiple engineers.
+
+=> CI Server -> This is a virtual machine running in the cloud that will automatically clone our project and run tests on it.
+* It takes the changes we have made to our project and integrate them into the master copy(remote repository). It does some checks before merging the code into te remote repository.
+
+=> CI Provider 
+* This is a company that provision CI Server for us. 
+* There are many CI Providers out there today e.g Travis CI, Circle CI, Codeship, AWS Codebuild. In this tutorial, we use 'Travis CI'.
+
+=> CI Flow: - We push code to github
+            - Travis automatically detects pushed code
+            - Travis clones our project
+            - Travis runs tests using a '.travis.yml' file. 
+            - If tests are OK, Travis sends us an email
+
+* We setup our CI stuff(trivia) inside '.travis.yml' file. 
+
+* '.yml' file(pronounced as yaml) is like a simplified way of writing plain JSON data. See YAML to JSON converter.
+
+Example:                      
+                              {
+five: 5                        "five": 5,   
+color: red                     "color": "red", 
+number: 5                      "number": 5,
+Languages I know:              "Languages I know": {                  // Creates a nested Object.
+    english: 'very well'            "english": "very well",
+    french: 'fairly'                "french": "fairly",
+    spanish: 'not at all'           "spanish": "not at all" 	},
+countToFive:                    "countToFive": [                      // Creates an Array
+    - 'one'                            "one",
+    - 'two'                            "two",
+    - 'three'                          "three",
+    - 4                                4,
+    - 5                                5    
+                                  ]
+                                  }
+
+* We can access Travis documentation from 'docs.travis-ci.com'.
+* See '.travis.yml' file for our configurations.
+
+=> OVERAL ARCHITECTURE RELATING TO REACT VS EXPRESS SERVERS
+
+* So far our server has been running on Development Mode. In this mode two seperate servers are started, one on port 3000(React) and the other on port 5000(Express). 
+* We have been accessing port 3000 inside our browser. React server takes all of React source code inside of our client directory and process it all into a single JavaScript file and make it available for access.
+* React Server is built on top of 'createReact' app.
+* createReact App(React Server) is NOT used in Production Enviroment. Instead, it has a single command executed(i.e npm run build) inside of its directory.
+* 'npm run build' command comes pre-tailored with createReact project. This command will take all of the Development assets(inside src directory), compile them all together into a package and place them into a folder inside the client directory called 'build'. 
+* There4 the 'build' directory contains the real React project to be served.
+-> When we move from Development to Production enviroment, the React Server is dropped and we are left with Express API which is responsible for distributing(serving) all the 'build' React project files. See '.travis.yml' file.
+* Moving to Production mode, we default to port 3000 instead of 5000 as seen in Development mode for consistency purpose. This helps avoid confusion when deciding on what port to use.
+
+-> CI Enviroment is more like PROD(Production) enviroment.
+
+=> SCRIPT - section of '.travis.yml' file 
+
+-> 'nohup npm run start &' command:
+* 'npm run start' will run the server. But immediately we start our server, it occupies the shell(terminal) such that we cannot run any other command. 
+* We need to run other commands and this is where 'nohup' and '&' symbol come in.
+* '&' symbol tells the underlying OS to run the command in a 'subshell'(i.e in background mode). E.g running 'npm run start &'(works on mac,linux only) command will start the server(in background) and still be able to run other commands(e.g 'cal' for calender) after pressing 'enter'.
+* But even with ampersand(&) appended, All processes will be Exited when we close the terminal(shell). This brings us to 'nohup' command.
+* 'nohup'(NoHungUp) command will keep the started processes running(e.g server) even after the shell is closed.
+
+-> We can manually kill running processes e.g the running server by the command 'pkill node'.
+
+-> sleep 3 
+* If we start our test suit too soon after starting up our server, the test suit may try to access the server but our server might not be ready. So we give our server a small time to execute and start listening to requests by appending the command 'sleep 3'. This will give a 3 seconds delay.
+
+=> MORE SERVER CONFIGS - in our CI Enviroment:
+* We will follow below steps:
+
+        - Add 'ci.js' key file
+        - Fix redis URL in services/cache.js
+        - Add redis URL to 'dev.js' and 'ci.js'
+        - Add mongoDB URI to ci.js  
+        - Make sure server starts on port 3000 in CI mode
+        - Make sure server serves React client files in CI mode
+
+* We create 'ci.js' key file in 'config' directory. 
+* We moved redis URL(redisUrl: 'redis://127.0.0.1:6379') from 'cache.js' file to 'dev.js' files.
+* We copied everything from 'dev.js' file into 'ci.js' file.
+* We added mongoDB URI to 'ci.js' file as; mongoURI: 'mongodb://127.0.0.1:27017/blog_ci'. All this we get from the CI documentation. Port was not specified, but it is '27017' by default. The database(blog_ci) does not exist by default. It is created by default if mongoose does not find it when it tries to connect to mongoDB instance.
+* We now need to make sure that Express starts in port 3000 instead of default port 5000. Remember react server(port 3000) is dropped when we move fom DEV to CI Enviroment and still be able to serve React files.
+We added(PORT=3000) on our '.travis.yml' file at the 'env' section. See the main 'index.js' file where the port is pecified as 'process.env.PORT || 5000'.
+* Finally to be sure our server serves React files in CI mode, from main 'index.js' file we included 'ci' with production enviroment as an array to serve react client files(from 'build' folder).
+
+=> We want to do some more changes to our project.
+* From 'helpers/page.js' file we changed 'headless' from False to TRUE. This is coz travis(virtual machine) has no display hooked up to it.
+* We also added 'no-sandbox' option just below it to keep us from messing around with some of the settings of the virtual machine that we are going to be assigned by travis. This flag will reduce the amount of time taken for our test to run.
+
+=> We now want to implement our CI Flow from above.
+
+1. Push code to github
+
+* We logged-in to our own github.com account. Created a new repository(NodeCi) by selecting plus(+) at top right side of the window.
+NOTE: Remember we cloned this project(AdvancedNodeStarter) from StephenGrider's git account. To Clone: we browsed to 'https://github.com/StephenGrider/AdvancedNodeStarter' and cloned(copied) the project link then turned back to our Terminal and run: 'git clone https://github.com/StephenGrider/AdvancedNodeStarter.git'
+->Then we changed(CD) into that directory(AdvancedNodeStarter) and startup our code editor inside this directory by running: ' atom . '
+
+* NOW, by running: 'git remote -v' from the Terminal, returned;
+        origin  https://github.com/StephenGrider/AdvancedNodeStarter.git (fetch)
+        origin  https://github.com/StephenGrider/AdvancedNodeStarter.git (push)
+
+->This shows the remote setup(origin link) points to Stephen Grider's github account.
+->We want to change this to point to 'NodeCi' repository we just created in our own git account.
+
+* To change origin we first run; 'git remote remove origin'.
+-> Running 'git remote -v' again should return nothing now.
+
+* We go back to our git account and copy the link to our new repository(https://github.com/adikaevans/NodeCi.git).
+-> Then we turn to our terminal and run; 'git remote add origin https://github.com/adikaevans/NodeCi.git'
+-> Running 'git remote -v' once more should return our new origin;
+        origin  https://github.com/adikaevans/NodeCi.git (fetch)
+        origin  https://github.com/adikaevans/NodeCi.git (push)
+
+* We have now linked up our local project to our new remote(github) repository.
+
+=> We now need to setup travis and make sure it understands that it needs to watch one of our repositories and try to clone and build a project any time we push new code to it.
+
+* We browsed to 'travis-ci.com'. Sign in with our github account.
+* We added our repository from github to travis-ci using the plus(+) sign.
+* We are now going to take our local project, commit all the changes we've made and push all that code to github.
+
+=> To add all changes we made, we run; 'git add .'      //without the quotes of course.
+* We then commit using; 'git commit -m "Travis config" '   //without the single quotes.
+* We use; 'git status' to see if there are any changes to commit.
+
+=> We now want to take all these changes that we made and push them up to our remote origin(repository) on github.com.
+* Travis-ci should automatically see the push up of new code and then try to clone and build our project.
+* To push-up our code, we run; ' git push origin master '.
+* To pull from remote; ' git pull origin master'
+
+=> If we go back to our browser on travis-ci.org, we see some changes happening.
+
+NB: We particularly run into output problems coz travis-ci.com is no longer free. We have an option of migrating to 'circleCi' and setup all these all over.
+* Any time we commit our code and push them to github, travis(circleCi) will start a new build and if successful, we will get an email as setup in github.
+
+=> Next, we look at image Up-Load. We want to add images to our project e.g associating a blog with an image. See 'imageUpload.txt'
+
+
+
+    
+	
+	
+	
+	
+		
+		
+		
+
+	
+	
+	
+	    
