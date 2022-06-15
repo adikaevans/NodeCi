@@ -45,4 +45,6 @@ that new image with the blog post.
 
 => To actually upload an image in our project, we started by adding an image selector to 'BlogFormReview.js' react file;
         <h5>Add an Image Mr.Adika</h5>
-        <input type="file" accept="image/*" />                   
+        <input type="file" accept="image/*" /> 
+
+* When we try to submit this blog post we want to get a Presigned URL from the Express API at the same time. Much of the code that we will need is tied to the React side.                    
