@@ -47,4 +47,7 @@ that new image with the blog post.
         <h5>Add an Image Mr.Adika</h5>
         <input type="file" accept="image/*" /> 
 
-* When we try to submit this blog post we want to get a Presigned URL from the Express API at the same time. Much of the code that we will need is tied to the React side.                    
+* When we add a new blog, we are also redirected to upload an image file.       
+
+=> When we try to submit this blog post we want to get a Presigned URL from the Express API at the same time. Much of the code that we will need is tied to the React side.  
+* We added a variable in 'BlogFormReview.js' that will store the image file that the user selects from the image selector above.
