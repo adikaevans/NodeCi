@@ -50,8 +50,9 @@ class BlogFormReview extends Component {
   }
 
   onFileChange(event) { //image upload event handler.The 'event' object contains the image file uploaded.
-    this.setState({ file: event.target.files });/* We place the file on the component(BlogFormReview) state.*/
+    this.setState({ file: event.target.files[0] });/* We place the file on the component(BlogFormReview) state.*/
     console.log(event.target.files); /* From the browse console(inspect), we see the console for 'event.target.files'. It returns 'FileList' which is like an Array that contains a reference to all the different image files that we attached using the image 'input' below. It contains the name and the type of the attached file.
+    * Note: We can only upload a single image at a time, yet the returned object 'FileList' is like an Array of files with only a single record(file) ever. So we added '[0]' to the setState function to only take the first image out of the Array and assign it to the 'file' key. Now after we select an image, our component will contain a reference that points to only that single image file.
     * We can also use the returned file object to get access to the undelying image file that actually exists on our hard-drive.*/
   }
 
