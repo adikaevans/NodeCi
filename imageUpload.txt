@@ -50,4 +50,7 @@ that new image with the blog post.
 * When we add a new blog, we are also redirected to upload an image file.       
 
 => When we try to submit this blog post we want to get a Presigned URL from the Express API at the same time. Much of the code that we will need is tied to the React side.  
-* We added a variable in 'BlogFormReview.js' that will store the image file that the user selects from the image selector above.
+* We added a variable in 'BlogFormReview.js' that will store the image file that the user selects from the image selector above. See '/src/components/BlogFormReview.js' file.
+
+* We want to get our Presigned URL when our component reaches the backend(Express API) and tries to create a new blog post. We want to be sure that whenever a user is about to click 'SAVE BLOG',we make a request for the presigned URL.
+So we navigate to the click-event(onSubmit) inside the component(BlogFormReview).
