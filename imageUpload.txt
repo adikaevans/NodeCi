@@ -53,4 +53,7 @@ that new image with the blog post.
 * We added a variable in 'BlogFormReview.js' that will store the image file that the user selects from the image selector above. See '/src/components/BlogFormReview.js' file.
 
 * We want to get our Presigned URL when our component reaches the backend(Express API) and tries to create a new blog post. We want to be sure that whenever a user is about to click 'SAVE BLOG',we make a request for the presigned URL.
-So we navigate to the click-event(onSubmit) inside the component(BlogFormReview).
+=> So we navigate to the click-event(onSubmit) function inside the component(BlogFormReview).
+*'onSubmit' function contains another function called 'submitBlog'. Any time submitBlog is called, we pass-in the file that we referenced.
+* We modified 'submitBlog' to first get the presigned URL, then uploads the image and only after that it can make a blog post on our backend API. The 'history' argument is sort of a callback function(callback functions are traditionaly issued as the final argument in a function call).
+* We now head to '/src/actions/index.js' file and find 'submitBlog' function and modify it so it gets a presigned URL b4 createng a blog.
