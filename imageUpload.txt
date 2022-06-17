@@ -57,3 +57,4 @@ that new image with the blog post.
 *'onSubmit' function contains another function called 'submitBlog'. Any time submitBlog is called, we pass-in the file that we referenced.
 * We modified 'submitBlog' to first get the presigned URL, then uploads the image and only after that it can make a blog post on our backend API. The 'history' argument is sort of a callback function(callback functions are traditionaly issued as the final argument in a function call).
 * We now head to '/src/actions/index.js' file and find 'submitBlog' function and modify it so it gets a presigned URL b4 createng a blog.
+=> Unfortunately since AWS S3 storage is a paid service, we can't follow through with setting-up presigned URL.
