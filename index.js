@@ -26,9 +26,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/authRoutes')(app);
+require('./routes/authRoutes')(app); // We hookup the route handlers.
 require('./routes/blogRoutes')(app);
-require('./routes/uploadRoutes')(app);
+require('./routes/uploadRoutes')(app);/* Use of the two sets of parenthesis-'()', one after another; the 'require' statement returns a function(first set of parenthesis). The second set of parenthesis is meant to immediately invoke that function, and pass-in the 'app' along with the invocation.*/
 
 if (['production', 'ci'].includes(process.env.NODE_ENV)) {
   app.use(express.static('client/build'));
