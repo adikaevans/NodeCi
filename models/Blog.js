@@ -10,4 +10,3 @@ const blogSchema = new Schema({
 });
 
 mongoose.model('Blog', blogSchema);
-s
