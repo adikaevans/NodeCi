@@ -14,7 +14,7 @@ module.exports = app => {
 
         s3.getSignedUrl('putObject', {  // putObject means upload a file in AWS S3.
             Bucket: 'my-blog-bucket-123', // Sample bucket name
-            ContentType: 'jpeg',
+            ContentType: 'image/jpeg',
             Key: key
         }, (err, url) => res.send({key, url}));
      
